@@ -4,7 +4,7 @@ from typing import List, Tuple
 class ExpertLSTMDataGenerator:
     def __init__(self, 
                  seed:              int     = 0,      
-                 variation:         float   = .5, 
+                 variation:         float   = .05, 
                  streakiness:       float   = .5,
                  translation_speed: float   = .1,
                  size_variation:    float   = .1,
@@ -30,7 +30,7 @@ class ExpertLSTMDataGenerator:
 
         np.random.seed(self.seed)
             
-    def generate_ground_truth(self) -> List[List[float]]:
+    def generate_ground_truth(self) -> None:
         data = [None] * self.num_samples
         #generate ground truth data
         
@@ -56,6 +56,21 @@ class ExpertLSTMDataGenerator:
             for tuple_index in range(1, 5):
                 new_frame[tuple_index] = max(0, min(1, new_frame[tuple_index]))
             data[i] = new_frame        
+
+        self.ground_truth = data
+    
+    def generate_mock_expert_predictions(self) -> List[List[float]]:
+        data = [None] * self.num_samples
+
+        #generate expert predictions
+        for i in range(self.num_samples):
+            new_frame = [None] * len(self.data_format)
+            new_frame[0] = self.ground_truth[i][0]
+
+            #determine if streak breaks
+            streak_break = np.random.uniform(0, 1) < self.streakiness
+            
+            data[i] = new_frame
 
         return data
     
