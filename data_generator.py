@@ -69,7 +69,23 @@ class ExpertLSTMDataGenerator:
 
             #determine if streak breaks
             streak_break = np.random.uniform(0, 1) < self.streakiness
-            
+
+            if streak_break:
+                #generate new expert prediction
+                new_frame[1] = np.random.uniform(0, 1)
+                new_frame[2] = np.random.uniform(0, 1)
+                new_frame[3] = np.random.uniform(0, 1)
+                new_frame[4] = np.random.uniform(0, 1)
+
+            else:
+                #use previous expert prediction with variation
+                new_frame[1] = data[i-1][1] + np.random.uniform(-self.variation, self.variation)
+                new_frame[2] = data[i-1][2] + np.random.uniform(-self.variation, self.variation)
+                new_frame[3] = data[i-1][3] + np.random.uniform(-self.variation, self.variation)
+                new_frame[4] = data[i-1][4] + np.random.uniform(-self.variation, self.variation)
+            #make sure new frame is in bounds
+            for tuple_index in range(1, 5):
+                new_frame[tuple_index] = max(0, min(1, new_frame[tuple_index]))
             data[i] = new_frame
 
         return data
