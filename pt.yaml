@@ -12,8 +12,8 @@ VisionTransformer:
 LSTM:
   model_location: LSTM/best.pth
 
-Label_Folder:
+Label_Dir:
   directory: Labels
 
-Screenshot_Folder:
+Image_Dir:
   directory: Screenshots
