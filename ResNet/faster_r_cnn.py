@@ -43,7 +43,7 @@ from torchvision.ops import nms
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
-def predict_and_visualize(model, image_path, device, num_classes=1, score_threshold=0.5, iou_threshold=0.3):
+def predict_and_visualize(model, image_path, device, num_classes=1, score_threshold=0.5, iou_threshold=0.3, visualize=False):
     """
     Predict and visualize detections on a single image.
 
@@ -85,21 +85,22 @@ def predict_and_visualize(model, image_path, device, num_classes=1, score_thresh
         scores = scores[keep_nms]
         labels = labels[keep_nms]
 
+    if visualize:
     # 4. Visualization
-    fig, ax = plt.subplots(1, 1, figsize=(10, 8))
-    ax.imshow(img)
+        fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+        ax.imshow(img)
 
-    # Plot predicted boxes
-    for box, score, label in zip(boxes, scores, labels):
-        x1, y1, x2, y2 = box
-        rect = patches.Rectangle((x1, y1), x2 - x1, y2 - y1,
-                                linewidth=2, edgecolor='red', facecolor='none')
-        ax.add_patch(rect)
-        ax.text(x1, y1 - 5, f'Class {label.item()} ({score:.2f})',
-                color='red', bbox=dict(facecolor='white', alpha=0.7))
+        # Plot predicted boxes
+        for box, score, label in zip(boxes, scores, labels):
+            x1, y1, x2, y2 = box
+            rect = patches.Rectangle((x1, y1), x2 - x1, y2 - y1,
+                                    linewidth=2, edgecolor='red', facecolor='none')
+            ax.add_patch(rect)
+            ax.text(x1, y1 - 5, f'Class {label.item()} ({score:.2f})',
+                    color='red', bbox=dict(facecolor='white', alpha=0.7))
 
-    plt.axis('off')
-    plt.show()
+        plt.axis('off')
+        plt.show()
 
     selected_box = None
 
@@ -121,11 +122,13 @@ def predict_and_visualize(model, image_path, device, num_classes=1, score_thresh
     else:
         print("No boxes detected after NMS")
 
-
+    verbose = False;
     # Print summary
-    print(f"Detected {len(boxes)} objects:")
+    if verbose:
+        print(f"Detected {len(boxes)} objects:")
     for i, (box, score, label) in enumerate(zip(boxes, scores, labels)):
-        print(f"Object {i+1}: Class {label.item()} | Confidence: {score:.2f} | Box: {box.tolist()}")
+        if verbose:
+            print(f"Object {i+1}: Class {label.item()} | Confidence: {score:.2f} | Box: {box.tolist()}")
     # Convert to YOLO format if box exists
         if selected_box is not None:
             label, x1, y1, x2, y2 = selected_box
@@ -188,8 +191,21 @@ if __name__ == "__main__":
 
     # Create model structure (same as used during training)
     model = get_model(num_classes=2)  # Assuming 2 classes: background + your object
-    model.load_state_dict(torch.load(model_path, map_location=device))
+    model.load_state_dict(torch.load(model_path, map_location=device, weights_only=True))
 
     # Example usage:
     final_prediction = predict_and_visualize(model, "Test_image.png", device=device, num_classes=2)
     print(f"Final prediction: {final_prediction}")
+
+class ResNetModel:
+    def __init__(self, model_name):
+        self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+        self.model = model_name
+        self.model = get_model(num_classes=2)
+        self.model.load_state_dict(torch.load(model_name, map_location=self.device, weights_only=True))
+        self.model.to(self.device)
+        print("ResNet init success")
+
+    def detect_in_image(self, image_path):
+        final_prediction = predict_and_visualize(self.model, image_path, device=self.device, num_classes=2)
+        return str(final_prediction)

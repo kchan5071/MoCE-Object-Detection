@@ -356,11 +356,12 @@ def make_pred(model : WillFlow, data : torch.Tensor) -> str :
     # GRAPH!
 
     pred = model(data)
-    pred_n = pred.numpy() # Moving to numpy to minimize shenanigans, I hope
+    pred_n = pred.detach().numpy() # Moving to numpy to minimize shenanigans, I hope
 
     ret = ''
     ret += str(
-            pred_n[0]
+            # pred_n[0]
+            str(1)
             )
     ret += ', '
 
@@ -369,10 +370,10 @@ def make_pred(model : WillFlow, data : torch.Tensor) -> str :
     # [class_label, x_min, y_min, x_max, y_max]
 
     # Thus, it needs to be converted to the desired format
-    x_dist = (pred_n[3] - pred_n[1]) / 2
-    y_dist = (pred_n[4] - pred_n[2]) / 2
-    x_ctr = pred_n[1] + x_dist
-    y_ctr = pred_n[2] + y_dist
+    x_dist = (pred_n[2] - pred_n[0]) / 2
+    y_dist = (pred_n[3] - pred_n[1]) / 2
+    x_ctr = pred_n[0] + x_dist
+    y_ctr = pred_n[1] + y_dist
 
     ret += str(x_ctr) + ', '
     ret += str(y_ctr) + ', '

@@ -2,6 +2,7 @@ import os
 import cv2
 import torch
 from ultralytics import YOLO
+from ultralytics.models.yolo.detect import DetectionPredictor
 
 
 class YOLOv5Trainer:
@@ -37,53 +38,64 @@ class YOLOv5Trainer:
             trainer.train()
 
         
-class ObjDetModel:
+class YoloModel:
 
     def __init__(self, model_name):
-        print("initializing yolo object")
-        # load pretrained model
-        # torch.cuda.set_device(0)
         self.model_resolution = 640
-        self.model = torch.hub.load('ultralytics/yolov5', 'custom', path =  model_name)
-        print("yolo init success")
+        #check if model exists
+        if not os.path.exists(model_name):
+            print(f"Model {model_name} does not exist.")
+            return
+        else:
+            print("Found model, initializing yolo object")
 
-    def load_new_model(self, model_name):
-        self.model = torch.hub.load('ultralytics/yolov5', 'custom', path = './models_folder/' + model_name)
+
+        self.model = torch.hub.load('ultralytics/yolov5', 'custom', path =  model_name, _verbose=False)
 
     def detect_in_image(self, image):
         # Run the YOLO model
         results = self.model(image)
 
-        #resize results according to resolution
-        x_resolution = int(image.shape[1])
-        y_resoltion = int(image.shape[0])
-
-        x_ratio = x_resolution / self.model_resolution
-        y_ratio = y_resoltion / self.model_resolution
-
         #fix resolution
         with torch.inference_mode():
             for box in results.xyxy[0]:
                 if box[5] == 0:
-                    box[2] = int(x_ratio * box[2])
-                    box[0] = int(x_ratio * box[0])
-                    box[3] = int(y_ratio * box[3])
-                    box[1] = int(y_ratio * box[1])
+                    box[2] = box[2] / self.model_resolution
+                    box[0] = box[0] / self.model_resolution
+                    box[3] = box[3] / self.model_resolution
+                    box[1] = box[1] / self.model_resolution
 
+        # fix to 1 box
+        if len(results.xyxy[0]) == 0:
+            return "1, 0, 0, 0, 0"
+        #fix to 1 box
+        if len(results.xyxy[0]) > 1:
+            results.xyxy[0] = results.xyxy[0][0:1]
 
-        return results
+        #change pandas to string with class center_x, center_y, width, height
+        result_string = "1, "
+        for box in results.xyxy[0]:
+            if box[5] == 0:
+                center_x = (box[2] + box[0]) / 2
+                center_y = (box[3] + box[1]) / 2
+                width = box[2] - box[0]
+                height = box[3] - box[1]
+                result_string += f"{(center_x)}, {(center_y)}, {(width)}, {(height)}"
+        return result_string
 
 def main():
     # trainer = YOLOv5Trainer()
     # trainer.trainer()
 
-    detector = ObjDetModel('Yolov5/best.pt')
+    detector = YoloModel('Yolov5/best.pt')
 
     image = cv2.imread("Test_image.png")
     results = detector.detect_in_image(image)
-    print(results.pandas().xyxy[0])
+    print(results)
 
 
 if __name__ == "__main__":
     main()
+
+()
 
