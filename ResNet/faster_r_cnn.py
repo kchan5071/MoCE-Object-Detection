@@ -171,27 +171,25 @@ def get_model(num_classes):
 
     return model
 
-from google.colab import files
 import os
-from google.colab import drive
-drive.mount('/content/drive')
+
 
 if __name__ == "__main__":
     # Set device
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
-    model_path = "fasterrcnn_resnet18.pth"
+    model_path = "ResNet/best.pth"
+    model_path = os.path.join(os.getcwd(), model_path)
 
     if not os.path.exists(model_path):
         print("Model file not found. Please upload it.")
-        uploaded = files.upload()  # open upload dialog
     else:
         print("Model file already exists. Skipping upload.")
 
     # Create model structure (same as used during training)
     model = get_model(num_classes=2)  # Assuming 2 classes: background + your object
-    model.load_state_dict(torch.load("fasterrcnn_resnet18.pth", map_location=device))
+    model.load_state_dict(torch.load(model_path, map_location=device))
 
     # Example usage:
-    final_prediction = predict_and_visualize(model, "/content/drive/MyDrive/Shark/Screenshots/screenshot_0034.png", device=device, num_classes=2)
+    final_prediction = predict_and_visualize(model, "Test_image.png", device=device, num_classes=2)
     print(f"Final prediction: {final_prediction}")

@@ -3,5 +3,8 @@ torch==2.2.1
 torchvision==0.17.2
 matplotlib==3.7.2
 matplotlib-inline==0.1.6
+opencv-python==4.9.0.80
+opencv-python-headless==4.10.0.84
+
 ultralytics==8.2.63
 yolov5==7.0.13

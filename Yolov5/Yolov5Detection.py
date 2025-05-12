@@ -7,7 +7,7 @@ from ultralytics import YOLO
 class YOLOv5Trainer:
     def __init__(self):
         self.initialized = False
-        
+
     def train(self, img_size = 640, batch_size = 16, epochs = 10):
         script_dir = os.path.dirname(os.path.abspath(__file__))
         os.system(
@@ -79,7 +79,7 @@ def main():
 
     detector = ObjDetModel('Yolov5/best.pt')
 
-    image = cv2.imread("Yolov5/test.jpg")
+    image = cv2.imread("Test_image.png")
     results = detector.detect_in_image(image)
     print(results.pandas().xyxy[0])
 

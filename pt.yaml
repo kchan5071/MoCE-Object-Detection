@@ -1,0 +1,13 @@
+# Pretrained model locations for different architectures
+
+ResNet:
+  model_location: ResNet/best.pth
+
+Yolov5:
+  model_location: Yolov5/best.pt
+
+VisionTransformer:
+  model_location: VisionTransformer/best.pth
+
+LSTM:
+  model_location: LSTM/best.pth
