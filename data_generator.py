@@ -94,8 +94,18 @@ class ExpertLSTMDataGenerator:
 if __name__ == "__main__":
     generator = ExpertLSTMDataGenerator()
     data = generator.generate_ground_truth()
-    for i in range(10):
-        print(data[i])
+
+    mock_expert_data = generator.generate_mock_expert_predictions()
+
+    if data is not None:
+        print("Ground Truth Data:")
+        for i in range(10):
+            print(data[i])
+
+    if mock_expert_data is not None:
+        print("Mock Expert Data:")
+        for i in range(10):
+            print(mock_expert_data[i])
 
 
 
