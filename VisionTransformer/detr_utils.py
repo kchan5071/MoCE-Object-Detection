@@ -178,7 +178,7 @@ class WillFlow(nn.Module):
     return x
 
 
-def halie_shoosh(inp : dict, print_vals=False):
+def halie_shoosh(position_labels : dict, print_vals=False):
       # I forget what motivated the name
       # Take your best guess
 
@@ -186,15 +186,15 @@ def halie_shoosh(inp : dict, print_vals=False):
       # position dictionary into a single tensor, because
       # that's what my code expects
 
-      if type(inp) is not dict:
-          raise Exception('Uhh... this ain\'t a dict! Type: {}'.format(type(inp)))
+      if type(position_labels) is not dict:
+          raise Exception('Uhh... this ain\'t a dict! Type: {}'.format(type(position_labels)))
 
-      pos, key = inp.values()
+      pos, key = position_labels.values()
       pos = pos.numpy().reshape((1, -1))
       key = key.numpy().reshape((1, -1))
       pk = from_numpy(np.hstack((key, pos)))
       if print_vals:
-        print("Dict: {}".format(inp))
+        print("Dict: {}".format(position_labels))
         print("Tensor: {}".format(pk))
 
       return pk
