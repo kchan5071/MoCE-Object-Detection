@@ -39,7 +39,9 @@ def read_label(label_path):
     labels = [line.strip() for line in label_data]
     return labels
 
-def get_image_and_label(image_dir, label_dir, index):
+def get_image_and_label(index):
+    image_dir = get_image_directory(YAML_FILE)['directory']
+    label_dir = get_label_directory(YAML_FILE)['directory']
     base_name = "screenshot_"
     image_suffix = ".png"
     label_suffix = ".txt"
@@ -48,7 +50,10 @@ def get_image_and_label(image_dir, label_dir, index):
     image = read_image(image_path)
     label = read_label(label_path)
 
-    return image_path, label_path, image, label
+    #split label into np array
+    returned_label = label[0].split(" ")
+
+    return image_path, label_path, image, returned_label
 
 
 
@@ -57,7 +62,7 @@ def main():
     label_dir = get_label_directory(YAML_FILE)
 
     yolo_model, resnet_model, detr_model = ModelCollector.initialize_models()
-    LSTM_model = LSTMModel.LSTMModel()
+    LSTM_model = LSTMModel.LSTMTrainingModel()
 
     # print(get_image_and_label(image_dir['directory'], label_dir['directory'], 1))
     for i in range(1, 2):

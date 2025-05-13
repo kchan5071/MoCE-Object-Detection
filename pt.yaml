@@ -10,7 +10,7 @@ VisionTransformer:
   model_location: VisionTransformer/best.pth
 
 LSTM:
-  model_location: LSTM/best.pth
+  model_location: lstm/lstm_model_epoch_200.pth
 
 Label_Dir:
   directory: Labels

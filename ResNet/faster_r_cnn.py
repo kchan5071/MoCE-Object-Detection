@@ -135,7 +135,7 @@ def predict_and_visualize(model, image_path, device, num_classes=1, score_thresh
             return convert_to_yolo_format((label, x1, y1, x2, y2), img_width=640, img_height=640)
 
     print("No boxes detected")
-    return None
+    return convert_to_yolo_format((0, 0, 0, 0, 0), img_width=640, img_height=640)
 
 import torchvision
 from torchvision.models.detection.rpn import AnchorGenerator
